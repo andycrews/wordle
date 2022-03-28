@@ -277,7 +277,7 @@ def ShowMain():
 ShowMain()
 x=input()
 if x=='2':
-
+    # hard code some scenario here for debugging it
     yellowmatch=[(3,'e')]
     wordle.AddYellowMatch(yellowmatch)
     print("adding yellowmatches: %s" % (yellowmatch))
@@ -353,6 +353,7 @@ elif x!='3':
                 (l0,l1,l2,l3,l4)=b[2]
                 print("Best %d: %s,%s,(%s,%s,%s,%s,%s)" % (bestn, b[0],b[1],l0,l1,l2,l3,l4))
 else:
+    # find best 5 letter first word
     ws=WordleSolver(wordle)
     bestn=len(Dictionary.fiveletterwords)+1
     best=[]
