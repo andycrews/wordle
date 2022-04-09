@@ -2,13 +2,16 @@
 
 class Dictionary:
     fiveletterwords=[]
-    bigdictfile='/usr/share/dict/words'
-    auxdictfile='/Users/andycrews/Documents/dict'
+    #bigdictfile='/usr/share/dict/words'
+    bigdictfile='wordledictionary'
     # words in the dictionary that I found wordle doesn't accept
     forbidden=set(['xurel','zerda','lapon','edder','heiau', 'kioea', 'ouabe','aalii','beice','blibe','yoick','zoism','zoist','writh','ville','zygal','zonar', 'acier','barie','bedin','bepen','besin','yinst','wisht','fusht','ululu','wheki','knezi','uneye','nmeme','neeze','babai','haire','twink','urled','sleer'])
     forbidden.add('plaga')
     forbidden.add('solen')
     forbidden.add('sewen')
+    forbidden.add('artha')
+    forbidden.add('barit')
+    forbidden.add('carty')
     def LoadWords():
         if Dictionary.fiveletterwords:
             return
@@ -48,7 +51,6 @@ class Dictionary:
         Dictionary.fiveletterwords.append('tubes')
         Dictionary.fiveletterwords.append('tules')
         Dictionary.fiveletterwords.append('tunes')
-        #f=open(Dictionary.auxdictfile)
         #for line in f:
         #    Dictionary.fiveletterwords.append(dword.lower())
         #print("%d words. removing dups" % (len(Dictionary.fiveletterwords)))
@@ -243,12 +245,20 @@ class WordleSolver:
                     largestword=word
                     largestresult=res
             # pick the word that give the smallest largest
-            if not best or len(largest.Matches())<len(best.Matches()):
+            m=largest.Matches()
+            if best:
+                b=best.Matches()
+            if not best or len(m)<len(b):
                 print("found new best: %s" % largestword)
                 print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
                 best=largest
                 bestword=largestword
                 bestresult=largestresult
+            elif len(m)==len(b):
+                print("found equal word: %s" % largestword)
+                print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
+            elif word=='lager':
+                print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
         results.append((bestword,best,bestresult))
         return results
 
