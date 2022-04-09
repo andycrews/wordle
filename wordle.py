@@ -368,7 +368,7 @@ else:
     bestn=len(Dictionary.fiveletterwords)+1
     best=[]
     print("Generating Wordle data structures for all %d words" % len(Dictionary.fiveletterwords))
-    for word,w,r in ws.GuessWords(['stare']):
+    for word,w,r in ws.GuessWords():
         n=len(w.Matches())
         if n and n<bestn:
             best=[(word,w,r)]
