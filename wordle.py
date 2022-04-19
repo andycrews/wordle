@@ -351,7 +351,9 @@ elif x!='3':
             ws=WordleSolver(wordle)
             bestn=len(Dictionary.fiveletterwords)+1
             best=[]
-            for word,w,r in ws.GuessWords(wordle.Matches()):
+            guesses=wordle.Matches()
+            #guesses += ['haves','vodka','vdmkh']
+            for word,w,r in ws.GuessWords(guesses):
                 n=len(w.Matches())
                 if n and n<bestn:
                     best=[(word,w,r)]
