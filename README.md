@@ -1,2 +1,2 @@
 # wordle
-interactive wordle assistant
+interactive wordle solver/assistant
