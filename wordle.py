@@ -213,15 +213,19 @@ class WordleSolver:
                         for m3 in allmtypes:
                             for m4 in allmtypes:
                                 searchresults.append([m0,m1,m2,m3,m4])
-        # evauate a list of words. return largest possible set
-        best=()
-        bestword=''
-        bestresult=()
+        # evauate a list of words. track largest possible match set
+        # and average
+        smallestmax=()
+        smallestmaxword=''
+        smallestmaxresult=()
+        smallestave=()
+        smallestaveword=''
         lastword='zzzz'
         for word in words:
             largest=()
-            largestword=''
             largestresult=()
+            totalsets=0
+            totalmatches=0
             if lastword[0]!=word[0]:
                 print('Trying %s' % (word))
             lastword=word
@@ -238,28 +242,36 @@ class WordleSolver:
                     continue
                 wr=WordleResult(self.wordle,word,res)
                 w=wr.result()
+                if len(w.Matches()):
+                    totalmatches+=len(w.Matches())
+                    totalsets+=1
                 if not largest or len(w.Matches())>len(largest.Matches()):
                     #print("found new largest")
                     #print(w,word,res[0],res[1],res[2],res[3],res[4])
                     largest=w
-                    largestword=word
                     largestresult=res
             # pick the word that give the smallest largest
             m=largest.Matches()
-            if best:
-                b=best.Matches()
-            if not best or len(m)<len(b):
-                print("found new best: %s" % largestword)
+            if smallestmax:
+                b=smallestmax.Matches()
+            if not smallestmax or len(m)<len(b):
+                print("found new smallestmax: %s" % word)
                 print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
-                best=largest
-                bestword=largestword
-                bestresult=largestresult
+                smallestmax=largest
+                smallestmaxword=word
+                smallestmaxresult=largestresult
             elif len(m)==len(b):
-                print("found equal word: %s" % largestword)
+                print("found equal smallestmax word: %s" % word)
                 print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
-            elif word=='lager':
+            elif word=='debugwordhere':
                 print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
-        results.append((bestword,best,bestresult))
+            ave=totalmatches / totalsets
+            #print("Ave = %f : %d / %d" % (ave, totalmatches, totalsets))
+            if not smallestave or ave < smallestave:
+                smallestave=ave
+                smallestaveword=word
+                print("Found new smallest AVE : %s %f" % (word, ave))
+        results.append((smallestmaxword,smallestmax,smallestmaxresult))
         return results
 
 
@@ -352,7 +364,7 @@ elif x!='3':
             bestn=len(Dictionary.fiveletterwords)+1
             best=[]
             guesses=wordle.Matches()
-            #guesses += ['haves','vodka','vdmkh']
+            guesses = ['clomp'] + guesses
             for word,w,r in ws.GuessWords(guesses):
                 n=len(w.Matches())
                 if n and n<bestn:
