@@ -364,7 +364,8 @@ elif x!='3':
             bestn=len(Dictionary.fiveletterwords)+1
             best=[]
             guesses=wordle.Matches()
-            guesses = ['clomp'] + guesses
+            # add a specific word for debug:
+            #guesses = ['clomp'] + guesses
             for word,w,r in ws.GuessWords(guesses):
                 n=len(w.Matches())
                 if n and n<bestn:
