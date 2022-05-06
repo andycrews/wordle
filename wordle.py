@@ -350,49 +350,49 @@ if x=='2':
     print(wordle)
 
 
-    while True:
-        ShowHelp()
-        print(wordle)
-        x=input()
-        if x=='1' or x=='m':
-            try:
-                print("Enter position [0-4]")
-                p=int(input())
-                print("Enter letter [a-z]")
-                l=input().lower()
-                wordle.AddMatch([(p,l)])
-            except:
-                print('oops')
-
-        if x=='2' or x=='y':
-            try:
-                print("Enter position [0-4]")
-                p=int(input())
-                print("Enter letter [a-z]")
-                l=input().lower()
-                wordle.AddYellowMatch([(p,l)])
-            except:
-                print('oops')
-
-        if x=='3' or x=='n':
-            print('Enter letter(s)')
+while True:
+    ShowHelp()
+    print(wordle)
+    x=input()
+    if x=='1' or x=='m':
+        try:
+            print("Enter position [0-4]")
+            p=int(input())
+            print("Enter letter [a-z]")
             l=input().lower()
-            wordle.AddNoMatch(l)
-        if x=='5' or x=='x':
-            # first guess all words. after that, pick one word to guess that might match
-            ws=WordleSolver(wordle)
-            bestn=len(Dictionary.fiveletterwords)+1
-            best=[]
-            guesses=wordle.Matches()
-            #guesses = ['clomp'] + guesses
-            for word,w,r in ws.GuessWords(guesses):
-                n=len(w.Matches())
-                if n and n<bestn:
-                    best=[(word,w,r)]
-                    bestn=n
-                elif n==bestn:
-                    best.append((word,w,r))
+            wordle.AddMatch([(p,l)])
+        except:
+            print('oops')
 
-            for b in best:
-                (l0,l1,l2,l3,l4)=b[2]
-                print("Best %d: %s,%s,(%s,%s,%s,%s,%s)" % (bestn, b[0],b[1],l0,l1,l2,l3,l4))
+    if x=='2' or x=='y':
+        try:
+            print("Enter position [0-4]")
+            p=int(input())
+            print("Enter letter [a-z]")
+            l=input().lower()
+            wordle.AddYellowMatch([(p,l)])
+        except:
+            print('oops')
+
+    if x=='3' or x=='n':
+        print('Enter letter(s)')
+        l=input().lower()
+        wordle.AddNoMatch(l)
+    if x=='5' or x=='x':
+        # first guess all words. after that, pick one word to guess that might match
+        ws=WordleSolver(wordle)
+        bestn=len(Dictionary.fiveletterwords)+1
+        best=[]
+        guesses=wordle.Matches()
+        #guesses = ['clomp'] + guesses
+        for word,w,r in ws.GuessWords(guesses):
+            n=len(w.Matches())
+            if n and n<bestn:
+                best=[(word,w,r)]
+                bestn=n
+            elif n==bestn:
+                best.append((word,w,r))
+
+        for b in best:
+            (l0,l1,l2,l3,l4)=b[2]
+            print("Best %d: %s,%s,(%s,%s,%s,%s,%s)" % (bestn, b[0],b[1],l0,l1,l2,l3,l4))
