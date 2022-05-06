@@ -226,6 +226,7 @@ class WordleSolver:
             largestresult=()
             totalsets=0
             totalmatches=0
+            totalwords=0
             if lastword[0]!=word[0]:
                 print('Trying %s' % (word))
             lastword=word
@@ -242,35 +243,44 @@ class WordleSolver:
                     continue
                 wr=WordleResult(self.wordle,word,res)
                 w=wr.result()
-                if len(w.Matches()):
-                    totalmatches+=len(w.Matches())
+                m=len(w.Matches())
+                if m:
+                    # the average is a little weird...
+                    totalwords+=m
                     totalsets+=1
-                if not largest or len(w.Matches())>len(largest.Matches()):
+                    totalmatches+=m*m
+                if not largest or m>len(largest.Matches()):
                     #print("found new largest")
                     #print(w,word,res[0],res[1],res[2],res[3],res[4])
                     largest=w
                     largestresult=res
-            # pick the word that give the smallest largest
+            ave=totalmatches / totalwords
+            #print("Ave = %f : %d / %d (%d sets)" % (ave, totalmatches, totalwords, totalsets))
             m=largest.Matches()
+            # track smallest largest
             if smallestmax:
                 b=smallestmax.Matches()
             if not smallestmax or len(m)<len(b):
+                print("------------------------------------")
                 print("found new smallestmax: %s" % word)
-                print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
+                print("  ",largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
+                print("  AVE : %s %f" % (word, ave))
                 smallestmax=largest
                 smallestmaxword=word
                 smallestmaxresult=largestresult
             elif len(m)==len(b):
+                print("------------------------------------")
                 print("found equal smallestmax word: %s" % word)
-                print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
+                print("  ",largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
             elif word=='debugwordhere':
                 print(largest,largestresult[0],largestresult[1],largestresult[2],largestresult[3],largestresult[4])
-            ave=totalmatches / totalsets
-            #print("Ave = %f : %d / %d" % (ave, totalmatches, totalsets))
             if not smallestave or ave < smallestave:
                 smallestave=ave
                 smallestaveword=word
+                print("------------------------------------")
                 print("Found new smallest AVE : %s %f" % (word, ave))
+                print("  smallestmax: %s" % largest)
+        # todo, return smallestave
         results.append((smallestmaxword,smallestmax,smallestmaxresult))
         return results
 
@@ -298,38 +308,48 @@ def ShowMain():
 
 ShowMain()
 x=input()
+if x=='3':
+    # find best 5 letter first word
+    ws=WordleSolver(wordle)
+    bestn=len(Dictionary.fiveletterwords)+1
+    best=[]
+    print("Generating Wordle data structures for all %d words" % len(Dictionary.fiveletterwords))
+    for word,w,r in ws.GuessWords():
+        n=len(w.Matches())
+        if n and n<bestn:
+            best=[(word,w,r)]
+            bestn=n
+            print("%s: %d matches" % (word, n))
+        elif n==bestn:
+            best.append((word,w,r))
+            print("%s: %d matches" % (word, n))
+        elif n*0.9 < bestn:
+            print("     %s: %d matches" % (word, n))
+
+    print("Found %d best words:" % (len(best)))
+    for b in best:
+        #print(b)
+        #print(len(b))
+        if len(b[2])==5:
+            (l0,l1,l2,l3,l4)=b[2]
+            print("Best %d: %s,%s,(%s,%s,%s,%s,%s)" % (bestn, b[0],b[1],l0,l1,l2,l3,l4))
+            #print("%s" % (b[1].Matches()))
+        else:
+            print("Best %d %s,%s" %(bestn, b[0],b[1]))
 if x=='2':
     # hard code some scenario here for debugging it
-    yellowmatch=[(3,'e')]
+    yellowmatch=[(2,'a')]
     wordle.AddYellowMatch(yellowmatch)
     print("adding yellowmatches: %s" % (yellowmatch))
-    matches=[(2,'i')]
+    matches=[(4,'e')]
     wordle.AddMatch(matches)
     print("adding matches: %s" % (matches))
-    nomatch='adu'
+    nomatch='crn'
     print("adding nomatches: %s" % (nomatch))
     wordle.AddNoMatch(nomatch)
     print(wordle)
 
-    yellowmatch=[(3,'r'),(4,'n')]
-    wordle.AddYellowMatch(yellowmatch)
-    print("adding yellowmatches: %s" % (yellowmatch))
-    nomatch='sco'
-    print("adding nomatches: %s" % (nomatch))
-    wordle.AddNoMatch(nomatch)
-    print(wordle)
-    print(wordle.Matches())
 
-    yellowmatch=[(0,'r'),(1,'e')]
-    wordle.AddYellowMatch(yellowmatch)
-    print("adding yellowmatches: %s" % (yellowmatch))
-    print(wordle)
-    nomatch='s'
-    print("adding nomatches: %s" % (nomatch))
-    wordle.AddNoMatch(nomatch)
-    print(wordle)
-
-elif x!='3':
     while True:
         ShowHelp()
         print(wordle)
@@ -364,7 +384,6 @@ elif x!='3':
             bestn=len(Dictionary.fiveletterwords)+1
             best=[]
             guesses=wordle.Matches()
-            # add a specific word for debug:
             #guesses = ['clomp'] + guesses
             for word,w,r in ws.GuessWords(guesses):
                 n=len(w.Matches())
@@ -377,31 +396,3 @@ elif x!='3':
             for b in best:
                 (l0,l1,l2,l3,l4)=b[2]
                 print("Best %d: %s,%s,(%s,%s,%s,%s,%s)" % (bestn, b[0],b[1],l0,l1,l2,l3,l4))
-else:
-    # find best 5 letter first word
-    ws=WordleSolver(wordle)
-    bestn=len(Dictionary.fiveletterwords)+1
-    best=[]
-    print("Generating Wordle data structures for all %d words" % len(Dictionary.fiveletterwords))
-    for word,w,r in ws.GuessWords():
-        n=len(w.Matches())
-        if n and n<bestn:
-            best=[(word,w,r)]
-            bestn=n
-            print("%s: %d matches" % (word, n))
-        elif n==bestn:
-            best.append((word,w,r))
-            print("%s: %d matches" % (word, n))
-        elif n*0.9 < bestn:
-            print("     %s: %d matches" % (word, n))
-
-    print("Found %d best words:" % (len(best)))
-    for b in best:
-        #print(b)
-        #print(len(b))
-        if len(b[2])==5:
-            (l0,l1,l2,l3,l4)=b[2]
-            print("Best %d: %s,%s,(%s,%s,%s,%s,%s)" % (bestn, b[0],b[1],l0,l1,l2,l3,l4))
-            #print("%s" % (b[1].Matches()))
-        else:
-            print("Best %d %s,%s" %(bestn, b[0],b[1]))
